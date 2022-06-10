@@ -1,49 +1,44 @@
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { useSelector, useDispatch } from 'react-redux';
 import { Section } from 'components/Section';
 import { ContactList } from 'components/Contacts';
 import { ContactForm } from 'components/ContactForm';
-import { addToStorage, getFromStorage } from './components/storage';
-// import { createStore } from 'redux'
+import { addToStorage } from './components/storage';
+import { addContacts, removeContacts } from 'redux/actions/contactsAction';
+
+
 
 function App() {
-  const [contacts, setContacts] = useState(getFromStorage('contacts') ? getFromStorage('contacts') : []);
-  const [filter, setFilter] = useState('');
-  console.log(contacts);
-
-
+  const contacts = useSelector(state => state.contacts);
+  const dispatch = useDispatch();
+  const [filter, setFilter] = useState('');  
 
   useEffect(() => {
     addToStorage('contacts', contacts);
   }, [contacts]);
 
-
   const handleDeleteBtn = event => {
-      const contactList = Object.values(contacts);
-      const currentId = event.target.closest('li').id;
-      const filterContacts = contactList.filter(({ id }) => {
-      return id !== currentId;
-    });
-    setContacts(filterContacts);
+    const currentId = event.target.closest('li').id;    
+    dispatch(removeContacts(currentId));
   };
 
   const changeStateAfterSubmit = (contactName, contactNumber) => {
     if (contacts.find(contact => contact.name === contactName)) {
-      alert(`${contactName} is already in contacts`);
+      toast.warn(`${contactName} is already in contacts`, { color: "red" });
     } else {
-      return setContacts([...contacts, { name: contactName, number: contactNumber, id: nanoid() }]);          
+      return dispatch(addContacts({ name: contactName, number: contactNumber, id: nanoid() }));
     }
-  }
-
-
+  };
 
   const handleChange = event => {
     const { name, value } = event.target;
     setFilter({ [name]: value });
   };
 
-  const contactsFilter = () => {  
-    console.log(contacts)
+  const contactsFilter = () => {      
     return contacts.filter(({ name }) => {     
       return name.toLowerCase().includes(filter.toLowerCase().trim());
     });
@@ -61,20 +56,10 @@ function App() {
             value={filter}
           />
         </Section>
+        <ToastContainer />
       </>
     );
   }
 
 
 export default App;
-
-// function counterReducer(state = { value: 0 }, action) {
-//   switch (action.type) {
-//     case 'counter/incremented':
-//       return { value: state.value + 1 }
-//     case 'counter/decremented':
-//       return { value: state.value - 1 }
-//     default:
-//       return state
-//   }
-// }
