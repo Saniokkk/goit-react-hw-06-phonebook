@@ -9,7 +9,6 @@ const contactsReducer = createReducer(
         return [...state, action.payload];
     },
     [removeContacts]: (state, action) => {
-        console.log(action)
         const contactList = Object.values(state);
         const filterContacts = contactList.filter(({ id }) => {
             return id !== action.payload;

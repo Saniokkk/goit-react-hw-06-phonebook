@@ -1,21 +1,24 @@
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { useSelector, useDispatch } from 'react-redux';
 import { Section } from 'components/Section';
 import { ContactList } from 'components/Contacts';
 import { ContactForm } from 'components/ContactForm';
 import { addToStorage } from './components/storage';
-import { addContacts, removeContacts } from 'redux/actions/contactsAction';
+import { addContacts, filterContacts, removeContacts } from 'redux/actions/contactsAction';
+
 
 
 
 function App() {
   const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
+  const state = useSelector(state=>state)
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState('');  
-
+  
+  console.log(state)
   useEffect(() => {
     addToStorage('contacts', contacts);
   }, [contacts]);
@@ -34,15 +37,18 @@ function App() {
   };
 
   const handleChange = event => {
-    const { name, value } = event.target;
-    setFilter({ [name]: value });
+    const {value } = event.target;
+    
+    dispatch(filterContacts(value));    
   };
-
+  
   const contactsFilter = () => {      
     return contacts.filter(({ name }) => {     
       return name.toLowerCase().includes(filter.toLowerCase().trim());
     });
   };
+
+  console.log(contactsFilter())
     return (
       <>
         <Section title="Phone book">
