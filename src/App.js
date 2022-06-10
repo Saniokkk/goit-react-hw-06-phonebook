@@ -13,8 +13,8 @@ import { addContacts, filterContacts, removeContacts } from 'redux/actions/conta
 
 
 function App() {
-  const contacts = useSelector(state => state.contacts);
-  const filter = useSelector(state => state.filter);
+  const contacts = useSelector(state => state.contacts.items);
+  const filter = useSelector(state => state.contacts.filter);
   const state = useSelector(state=>state)
   const dispatch = useDispatch();
   
